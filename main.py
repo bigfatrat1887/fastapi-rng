@@ -1,26 +1,19 @@
-from enum import Enum
 import uvicorn
-from fastapi import FastAPI
-
-
-class ModelName(str, Enum):
-    alexnet = "alexnet"
-    resnet = "resnet"
-    lenet = "lenet"
-
+from fastapi import FastAPI, Path
 
 app = FastAPI()
 
 
-@app.get("/models/{model_name}")
-async def get_model(model_name: ModelName):
-    if model_name == ModelName.alexnet:
-        return {"model_name": model_name, "message": "Deep Learning FTW!"}
+@app.get("/items/{item_id}")
+async def read_items(
 
-    if model_name.value == "lenet":
-        return {"model_name": model_name, "message": "LeCNN all the images"}
+    *, item_id: int = Path(..., title="The ID of the item to get", ge=1), q: str
 
-    return {"model_name": model_name, "message": "Have some residuals"}
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
 
 
 if __name__ == "__main__":
